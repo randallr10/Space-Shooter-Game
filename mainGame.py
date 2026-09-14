@@ -47,7 +47,6 @@ while keep_playing==True:
       keep_playing = False
       
     #all items drawn to the screen go here
-    pygame.draw.line(screen, WHITE, [0,00], [500,600], 5)
 
        
   #This function call updates the screen 
