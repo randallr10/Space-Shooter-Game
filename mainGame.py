@@ -18,7 +18,6 @@ WHITE = (255,255,255)
 
 #other variable initializers (fonts, text, images, etc)
 player_x = 750
-speed = 5
 
 #create a screen with dimensions 
 screen = pygame.display.set_mode((screen_width, screen_height)) 
@@ -50,18 +49,22 @@ while keep_playing==True:
   #checks for keyboard input
   keys = pygame.key.get_pressed()
 
-  if keys[pygame.K_LEFT]:
-    if player_x > 0:
-      player_x -= speed
-  if keys[pygame.K_RIGHT]:
-    if player_x < 1450:
-      player_x += speed
+  def move_player(player_x):
+    speed = 5
+    if keys[pygame.K_LEFT]:
+      if player_x > 0:
+        player_x -= speed
+    if keys[pygame.K_RIGHT]:
+      if player_x < 1450:
+        player_x += speed
+    return player_x
 
   #draws the character
   def draw_player(player_x):
     screen.fill((0, 0, 0))
     pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
-
+  
+  player_x = move_player(player_x)
   draw_player(player_x)
        
   #This function call updates the screen 
