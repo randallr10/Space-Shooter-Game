@@ -47,6 +47,7 @@ while keep_playing==True:
     if event.type == pygame.QUIT: 
       keep_playing = False
 
+  #checks for keyboard input
   keys = pygame.key.get_pressed()
 
   if keys[pygame.K_LEFT]:
@@ -56,10 +57,12 @@ while keep_playing==True:
     if player_x < 1450:
       player_x += speed
 
-  screen.fill((0, 0, 0))
+  #draws the character
+  def draw_player(player_x):
+    screen.fill((0, 0, 0))
+    pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
 
-  pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
-
+  draw_player(player_x)
        
   #This function call updates the screen 
   pygame.display.update() 
