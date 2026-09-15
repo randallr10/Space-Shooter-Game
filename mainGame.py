@@ -15,9 +15,11 @@ screen_height=1000
 
 #color code constants 
 WHITE = (255,255,255)
+RED = (255, 0, 0)
 
-#other variable initializers (fonts, text, images, etc)
+#other variables
 player_x = 750
+bullets = []
 
 #create a screen with dimensions 
 screen = pygame.display.set_mode((screen_width, screen_height)) 
@@ -46,6 +48,18 @@ while keep_playing==True:
     if event.type == pygame.QUIT: 
       keep_playing = False
 
+    def shoot(bullets, player_x):
+      bullet_y = 900
+      ammo = (screen, RED, (player_x, bullet_y, 25, 50))
+      bullets.append(ammo)
+
+      
+
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_UP:
+        shoot(bullets, player_x)
+        
+
   #checks for keyboard input
   keys = pygame.key.get_pressed()
 
@@ -63,6 +77,8 @@ while keep_playing==True:
   def draw_player(player_x):
     screen.fill((0, 0, 0))
     pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
+
+  
   
   player_x = move_player(player_x)
   draw_player(player_x)
