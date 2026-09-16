@@ -17,15 +17,17 @@ screen_height=1000
 WHITE = (255,255,255)
 YELLOW = (255, 255, 0)
 
-#other variables & function
+#other variables & functions
 player_x = 750
-bullet_y = 600
+bullet_y = 875
+SHOT_DELAY = 350
+last_shot = 0
 bullets = []
 
 def create_bullet(bullets, player_x, bullet_y):
-  ammo = (player_x, bullet_y, 10, 25)
+  player_x = player_x + 20
+  ammo = pygame.Rect(player_x, bullet_y, 10, 25)
   bullets.append(ammo)
-  print(bullets)
   return bullets
 
 def draw_bullets(bullets):
@@ -41,6 +43,13 @@ def move_player(player_x):
     if player_x < 1450:
       player_x += speed
   return player_x
+
+def move_bullets(bullets):
+  speed = 10
+  for bullet in bullets:
+    bullet.y -= speed
+    if bullet.bottom < 0:
+      bullets.remove(bullet)
 
 def draw_player(player_x):
   pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
@@ -74,12 +83,18 @@ while keep_playing==True:
 
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_UP:
-        bullets = create_bullet(bullets, player_x, bullet_y)
+        current_time = pygame.time.get_ticks()
+        if current_time - last_shot >= SHOT_DELAY:
+          bullets = create_bullet(bullets, player_x, bullet_y)
+          last_shot = current_time
   
 
   #checks for keyboard input
   keys = pygame.key.get_pressed()
 
+  move_bullets(bullets)
+  for bullet in bullets:
+    pygame.draw.rect(screen, YELLOW, bullet)
 
   screen.fill((0,0,0))
   player_x = move_player(player_x)
