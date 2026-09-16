@@ -15,11 +15,35 @@ screen_height=1000
 
 #color code constants 
 WHITE = (255,255,255)
-RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
-#other variables
+#other variables & function
 player_x = 750
+bullet_y = 600
 bullets = []
+
+def create_bullet(bullets, player_x, bullet_y):
+  ammo = (player_x, bullet_y, 10, 25)
+  bullets.append(ammo)
+  print(bullets)
+  return bullets
+
+def draw_bullets(bullets):
+  for bullet in bullets:
+    pygame.draw.rect(screen, YELLOW, bullet)
+        
+def move_player(player_x):
+  speed = 5
+  if keys[pygame.K_LEFT]:
+    if player_x > 0:
+      player_x -= speed
+  if keys[pygame.K_RIGHT]:
+    if player_x < 1450:
+      player_x += speed
+  return player_x
+
+def draw_player(player_x):
+  pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
 
 #create a screen with dimensions 
 screen = pygame.display.set_mode((screen_width, screen_height)) 
@@ -48,39 +72,22 @@ while keep_playing==True:
     if event.type == pygame.QUIT: 
       keep_playing = False
 
-    def shoot(bullets, player_x):
-      bullet_y = 900
-      ammo = (screen, RED, (player_x, bullet_y, 25, 50))
-      bullets.append(ammo)
-
-      
-
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_UP:
-        shoot(bullets, player_x)
-        
+        bullets = create_bullet(bullets, player_x, bullet_y)
+  
 
   #checks for keyboard input
   keys = pygame.key.get_pressed()
 
-  def move_player(player_x):
-    speed = 5
-    if keys[pygame.K_LEFT]:
-      if player_x > 0:
-        player_x -= speed
-    if keys[pygame.K_RIGHT]:
-      if player_x < 1450:
-        player_x += speed
-    return player_x
 
-  #draws the character
-  def draw_player(player_x):
-    screen.fill((0, 0, 0))
-    pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
-
-  
-  
+  screen.fill((0,0,0))
   player_x = move_player(player_x)
+
+  screen.fill((0, 0, 0))
+
+  draw_bullets(bullets)
+  
   draw_player(player_x)
        
   #This function call updates the screen 
@@ -89,5 +96,5 @@ while keep_playing==True:
   clock.tick(60) 
 
 #quits the pygame module 
-pygame.quit() 
-quit() 
+pygame.quit()
+quit()
