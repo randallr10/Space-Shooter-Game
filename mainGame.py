@@ -125,6 +125,7 @@ while keep_playing==True:
           bullets = create_bullet(bullets, player_x, bullet_y)
           last_shot = current_time
 
+          
   #checks for keyboard input
   keys = pygame.key.get_pressed()
 
