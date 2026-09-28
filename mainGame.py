@@ -29,7 +29,8 @@ last_shot = 0
 last_enemy = 0
 bullets = []
 enemies = []
-
+score = 0
+hitPoints = 3
 
 
 #creates the bullets and their coordinates
@@ -60,6 +61,12 @@ def draw_enemies(enemies):
   for enemy in enemies:
     pygame.draw.rect(screen, RED, enemy)
 
+def draw_score(score):
+  font = pygame.font.Font(None, 50)
+  text = font.render("Score: " + str(score), True, WHITE)
+  screen.blit(text, (0,0))
+  return score
+
 #moves the player left and right without going off screen
 def move_player(player_x):
   speed = 7.5
@@ -85,7 +92,9 @@ def move_enemies(enemies, bullets):
   for enemy in enemies:
     enemy.y += speed
     for bullet in bullets:
-      if enemy.top > 1000 or enemy.colliderect(bullet):
+      if enemy.top > 1000:
+        enemies.remove(enemy)
+      if enemy.colliderect(bullet):
         enemies.remove(enemy)
         bullets.remove(bullet)
 
@@ -138,13 +147,12 @@ while keep_playing==True:
   for bullet in bullets:
     pygame.draw.rect(screen, YELLOW, bullet)
 
-
   screen.fill((0,0,0))
-
 
   player_x = move_player(player_x)
 
   move_enemies(enemies, bullets)
+
 
   screen.fill((0, 0, 0))
 
@@ -152,6 +160,8 @@ while keep_playing==True:
   draw_bullets(bullets)
   
   draw_player(player_x)
+
+  score = draw_score(score)
 
   draw_enemies(enemies)
 
