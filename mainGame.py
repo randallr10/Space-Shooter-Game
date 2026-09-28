@@ -32,6 +32,7 @@ enemies = []
 score = 0
 hitPoints = 3
 
+shot = False
 
 #creates the bullets and their coordinates
 def create_bullet(bullets, player_x, bullet_y):
@@ -97,7 +98,7 @@ def move_enemies(enemies, bullets):
       if enemy.colliderect(bullet):
         enemies.remove(enemy)
         bullets.remove(bullet)
-
+        return True
 
 
 #create a screen with dimensions 
@@ -143,6 +144,8 @@ while keep_playing==True:
     enemies = create_enemies(enemies, enemy_y)
     last_enemy = enemy_time
 
+
+
   move_bullets(bullets, enemies)
   for bullet in bullets:
     pygame.draw.rect(screen, YELLOW, bullet)
@@ -151,10 +154,16 @@ while keep_playing==True:
 
   player_x = move_player(player_x)
 
-  move_enemies(enemies, bullets)
+  shot = move_enemies(enemies, bullets)
+  if shot == True:
+    score += 100
+    shot = False
+
+
 
 
   screen.fill((0, 0, 0))
+
 
 
   draw_bullets(bullets)
