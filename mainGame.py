@@ -24,15 +24,13 @@ player_x = 750
 bullet_y = 875
 enemy_y = 0
 SHOT_DELAY = 350
-ENEMY_DELAY = 1000
+ENEMY_DELAY = 1250
 last_shot = 0
 last_enemy = 0
 bullets = []
 enemies = []
 score = 0
 hitPoints = 3
-
-shot = False
 
 #creates the bullets and their coordinates
 def create_bullet(bullets, player_x, bullet_y):
@@ -68,6 +66,12 @@ def draw_score(score):
   screen.blit(text, (0,0))
   return score
 
+def draw_health(hitPoints):
+  font = pygame.font.Font(None, 50)
+  text = font.render("HP: " + str(hitPoints), True, WHITE)
+  screen.blit(text, (725,950))
+  return hitPoints
+
 #moves the player left and right without going off screen
 def move_player(player_x):
   speed = 7.5
@@ -88,17 +92,24 @@ def move_bullets(bullets, enemies):
       bullets.remove(bullet)
 
 #moves the enemies down towards the player
-def move_enemies(enemies, bullets):
+def move_enemies(enemies, bullets, score, hitPoints):
   speed = 1
-  for enemy in enemies:
+  for enemy in enemies[:]:
     enemy.y += speed
-    for bullet in bullets:
-      if enemy.top > 1000:
+
+    if enemy.top > 1000:
         enemies.remove(enemy)
+        hitPoints -= 1
+        continue
+
+    for bullet in bullets[:]:
       if enemy.colliderect(bullet):
         enemies.remove(enemy)
         bullets.remove(bullet)
-        return True
+        score += 100
+        break
+
+  return score, hitPoints
 
 
 #create a screen with dimensions 
@@ -129,6 +140,8 @@ while keep_playing==True:
       keep_playing = False
 
     if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_ESCAPE:
+        keep_playing = False
       if event.key == pygame.K_UP:
         current_time = pygame.time.get_ticks()
         if current_time - last_shot >= SHOT_DELAY:
@@ -154,12 +167,9 @@ while keep_playing==True:
 
   player_x = move_player(player_x)
 
-  shot = move_enemies(enemies, bullets)
-  if shot == True:
-    score += 100
-    shot = False
-
-
+  score, hitPoints = move_enemies(enemies, bullets, score, hitPoints)
+  if hitPoints == 0:
+    pygame.quit()
 
 
   screen.fill((0, 0, 0))
@@ -170,7 +180,8 @@ while keep_playing==True:
   
   draw_player(player_x)
 
-  score = draw_score(score)
+  draw_score(score)
+  draw_health(hitPoints)
 
   draw_enemies(enemies)
 
@@ -178,6 +189,7 @@ while keep_playing==True:
   pygame.display.update() 
   #sets the frame rate
   clock.tick(60) 
+
 
 #quits the pygame module 
 pygame.quit()
