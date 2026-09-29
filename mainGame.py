@@ -21,7 +21,7 @@ RED = (255, 0, 0)
 
 #other variables & functions
 player_x = 750
-bullet_y = 875
+bullet_y = 800
 enemy_y = 0
 SHOT_DELAY = 350
 ENEMY_DELAY = 1250
@@ -31,6 +31,19 @@ bullets = []
 enemies = []
 score = 0
 hitPoints = 3
+
+#MENU FUNCT.
+def draw_title():
+  font = pygame.font.Font(None, 100)
+  text = font.render("Space Shooter", True, WHITE)
+  screen.blit(text, (525,500))
+
+def draw_startBut():
+  font = pygame.font.Font(None, 64)
+  text = font.render("Press down arrow to Start", True, WHITE)
+  screen.blit(text, (500, 600))
+
+#play functions
 
 #creates the bullets and their coordinates
 def create_bullet(bullets, player_x, bullet_y):
@@ -49,7 +62,7 @@ def create_enemies(enemies, enemy_y):
 
   #draws the player character
 def draw_player(player_x):
-  pygame.draw.rect(screen, WHITE, (player_x, 900, 50, 50))
+  pygame.draw.rect(screen, WHITE, (player_x, 850, 50, 50))
 
 #draws the billets onto the screen based on the coordinate they were created on.
 def draw_bullets(bullets):
@@ -130,14 +143,25 @@ clock.tick(60)
 
 #variable to control the game loop 
 keep_playing=True 
+gameState="menu"
 
 #Game Loop - needed to keep updating and redrawing the screen 
 while keep_playing==True: 
+
   #iterates over the current list of events(checks for events)  
   for event in pygame.event.get(): 
     #will stop the game loop if escape is pressed 
     if event.type == pygame.QUIT: 
       keep_playing = False
+
+  if gameState == "menu":
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_DOWN:
+        gameState = "play"
+    draw_title()
+    draw_startBut()
+  
+  elif gameState == "play":
 
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
@@ -146,44 +170,42 @@ while keep_playing==True:
         current_time = pygame.time.get_ticks()
         if current_time - last_shot >= SHOT_DELAY:
           bullets = create_bullet(bullets, player_x, bullet_y)
-          last_shot = current_time
+          last_shot = current_time   
+    #checks for keyboard input
+    keys = pygame.key.get_pressed()
 
-          
-  #checks for keyboard input
-  keys = pygame.key.get_pressed()
-
-  enemy_time = pygame.time.get_ticks()
-  if enemy_time - last_enemy >= ENEMY_DELAY:
-    enemies = create_enemies(enemies, enemy_y)
-    last_enemy = enemy_time
+    enemy_time = pygame.time.get_ticks()
+    if enemy_time - last_enemy >= ENEMY_DELAY:
+      enemies = create_enemies(enemies, enemy_y)
+      last_enemy = enemy_time
 
 
 
-  move_bullets(bullets, enemies)
-  for bullet in bullets:
-    pygame.draw.rect(screen, YELLOW, bullet)
+    move_bullets(bullets, enemies)
+    for bullet in bullets:
+      pygame.draw.rect(screen, YELLOW, bullet)
 
-  screen.fill((0,0,0))
+    screen.fill((0,0,0))
 
-  player_x = move_player(player_x)
+    player_x = move_player(player_x)
 
-  score, hitPoints = move_enemies(enemies, bullets, score, hitPoints)
-  if hitPoints == 0:
-    pygame.quit()
-
-
-  screen.fill((0, 0, 0))
+    score, hitPoints = move_enemies(enemies, bullets, score, hitPoints)
+    if hitPoints == 0:
+      pygame.quit()
 
 
+    screen.fill((0, 0, 0))
 
-  draw_bullets(bullets)
-  
-  draw_player(player_x)
 
-  draw_score(score)
-  draw_health(hitPoints)
 
-  draw_enemies(enemies)
+    draw_bullets(bullets)
+    
+    draw_player(player_x)
+
+    draw_score(score)
+    draw_health(hitPoints)
+
+    draw_enemies(enemies)
 
   #This function call updates the screen 
   pygame.display.update() 
