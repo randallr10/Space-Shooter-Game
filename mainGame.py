@@ -41,10 +41,16 @@ def draw_title():
 def draw_startBut():
   font = pygame.font.Font(None, 64)
   text = font.render("Press down arrow to Start", True, WHITE)
-  screen.blit(text, (500, 600))
+  screen.blit(text, (490, 600))
+
+
+#end functions
+def draw_defeat():
+  font = pygame.font.Font(None, 100)
+  text = font.render("Defeated...", True, RED)
+  screen.blit(text, (575,500))
 
 #play functions
-
 #creates the bullets and their coordinates
 def create_bullet(bullets, player_x, bullet_y):
   player_x = player_x + 20
@@ -82,7 +88,7 @@ def draw_score(score):
 def draw_health(hitPoints):
   font = pygame.font.Font(None, 50)
   text = font.render("HP: " + str(hitPoints), True, WHITE)
-  screen.blit(text, (725,950))
+  screen.blit(text, (0,50))
   return hitPoints
 
 #moves the player left and right without going off screen
@@ -191,7 +197,7 @@ while keep_playing==True:
 
     score, hitPoints = move_enemies(enemies, bullets, score, hitPoints)
     if hitPoints == 0:
-      pygame.quit()
+      gameState = "end"
 
 
     screen.fill((0, 0, 0))
@@ -206,6 +212,11 @@ while keep_playing==True:
     draw_health(hitPoints)
 
     draw_enemies(enemies)
+
+
+  elif gameState == "end":
+    screen.fill((0,0,0))
+    draw_defeat()
 
   #This function call updates the screen 
   pygame.display.update() 
