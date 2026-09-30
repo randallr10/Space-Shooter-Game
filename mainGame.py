@@ -43,6 +43,10 @@ def draw_startBut():
   text = font.render("Press down arrow to Start", True, WHITE)
   screen.blit(text, (490, 600))
 
+def draw_exit():
+  font = pygame.font.Font(None, 50)
+  text = font.render("Esc to Exit", True, WHITE)
+  screen.blit(text, (0,0))
 
 #end functions
 def draw_defeat():
@@ -182,8 +186,11 @@ while keep_playing==True:
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
         gameState = "play"
+      if event.key == pygame.K_ESCAPE:
+        keep_playing = False
     draw_title()
     draw_startBut()
+    draw_exit()
   
   elif gameState == "play":
 
@@ -212,7 +219,11 @@ while keep_playing==True:
     screen.fill((0,0,0))
 
     player_x = move_player(player_x)
+
+
     screen.fill((0, 0, 0))
+
+
     player = draw_player(player_x)
 
     score, hitPoints = move_enemies(enemies, bullets, score, hitPoints, player)
@@ -230,6 +241,9 @@ while keep_playing==True:
 
 
   elif gameState == "end":
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_ESCAPE:
+        keep_playing = False
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
@@ -242,6 +256,7 @@ while keep_playing==True:
     draw_defeat()
     draw_restrtBut()
     draw_endScore(score)
+    draw_exit()
 
   #This function call updates the screen 
   pygame.display.update() 
