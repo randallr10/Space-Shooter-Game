@@ -55,6 +55,12 @@ def draw_restrtBut():
   text = font.render("Press down arrow to Restart", True, WHITE)
   screen.blit(text, (425, 600))
 
+def draw_endScore(score):
+  font = pygame.font.Font(None, 120)
+  text = font.render("Score: " + str(score), True, YELLOW)
+  screen.blit(text, (525,250))
+  return score
+
 #play functions
 #creates the bullets and their coordinates
 def create_bullet(bullets, player_x, bullet_y):
@@ -73,7 +79,9 @@ def create_enemies(enemies, enemy_y):
 
   #draws the player character
 def draw_player(player_x):
-  pygame.draw.rect(screen, WHITE, (player_x, 850, 50, 50))
+  player = pygame.Rect(player_x, 850, 50, 50)
+  pygame.draw.rect(screen, WHITE, player)
+  return player
 
 #draws the billets onto the screen based on the coordinate they were created on.
 def draw_bullets(bullets):
@@ -116,12 +124,17 @@ def move_bullets(bullets, enemies):
       bullets.remove(bullet)
 
 #moves the enemies down towards the player
-def move_enemies(enemies, bullets, score, hitPoints):
+def move_enemies(enemies, bullets, score, hitPoints, player):
   speed = 1
   for enemy in enemies[:]:
     enemy.y += speed
 
     if enemy.top > 1000:
+        enemies.remove(enemy)
+        hitPoints -= 1
+        continue
+
+    if enemy.colliderect(player):
         enemies.remove(enemy)
         hitPoints -= 1
         continue
@@ -199,19 +212,16 @@ while keep_playing==True:
     screen.fill((0,0,0))
 
     player_x = move_player(player_x)
+    screen.fill((0, 0, 0))
+    player = draw_player(player_x)
 
-    score, hitPoints = move_enemies(enemies, bullets, score, hitPoints)
+    score, hitPoints = move_enemies(enemies, bullets, score, hitPoints, player)
     if hitPoints == 0:
       gameState = "end"
 
 
-    screen.fill((0, 0, 0))
-
-
 
     draw_bullets(bullets)
-    
-    draw_player(player_x)
 
     draw_score(score)
     draw_health(hitPoints)
@@ -221,16 +231,17 @@ while keep_playing==True:
 
   elif gameState == "end":
     screen.fill((0,0,0))
-    bullets = []
-    enemies = []
-    score = 0
-    hitPoints = 3
-    player_x = 750
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
         gameState = "play"
+        bullets = []
+        enemies = []
+        score = 0
+        hitPoints = 3
+        player_x = 750
     draw_defeat()
     draw_restrtBut()
+    draw_endScore(score)
 
   #This function call updates the screen 
   pygame.display.update() 
