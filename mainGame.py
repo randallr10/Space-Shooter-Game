@@ -152,7 +152,7 @@ def move_enemies(enemies, bullets, score, hitPoints, player):
 
   return score, hitPoints
 
-
+ 
 #create a screen with dimensions 
 screen = pygame.display.set_mode((screen_width, screen_height)) 
 

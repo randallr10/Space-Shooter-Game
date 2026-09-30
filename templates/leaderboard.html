@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flask and SQLite </title>
+    </head>
+    <style>
+        table, th, td {
+          border:1px solid black;
+        }
+        </style>
+    <body>
+        <table style="width:100%">
+            <tr>
+              <th>Usernames</th>
+              <th>Scores</th>
+            </tr>
+            {%for leaderboard in data%}
+               <tr>
+                 <td>{{leaderboard[0]}}</td>
+                 <td>{{leaderboard[1]}}</td>
+                </tr>
+            {%endfor%}
+          </table>          
+    </body>
+</html>
