@@ -31,7 +31,7 @@ last_enemy = 0
 bullets = []
 enemies = []
 score = 0
-hitPoints = 1
+hitPoints = 3
 username = "test"
 
 
