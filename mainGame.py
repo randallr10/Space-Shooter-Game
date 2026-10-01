@@ -1,6 +1,7 @@
 #import the pygame library 
 import pygame 
 import random
+import sqlite3
 
 #anchor the pygame screen so you see it in codio.
 #Click on the arrow in the upper left corner to display in a new browser tab.
@@ -30,9 +31,27 @@ last_enemy = 0
 bullets = []
 enemies = []
 score = 0
-hitPoints = 3
+hitPoints = 1
+username = "test"
+
+
+def save_score(username, score):
+  connection = sqlite3.connect("database.db")
+  cursor = connection.cursor()
+
+  cursor.execute(
+    "INSERT INTO LEADERBOARD \
+    (username, scores) VALUES (?,?)",
+                    (username, score)
+  )
+  
+  connection.commit()
+  connection.close()
+
+
 
 #MENU FUNCT.
+
 def draw_title():
   font = pygame.font.Font(None, 100)
   text = font.render("Space Shooter", True, WHITE)
@@ -48,7 +67,9 @@ def draw_exit():
   text = font.render("Esc to Exit", True, WHITE)
   screen.blit(text, (0,0))
 
-#end functions
+
+  #END GAME STATE FUNCTIONS
+
 def draw_defeat():
   font = pygame.font.Font(None, 100)
   text = font.render("Defeated...", True, RED)
@@ -62,8 +83,29 @@ def draw_restrtBut():
 def draw_endScore(score):
   font = pygame.font.Font(None, 120)
   text = font.render("Score: " + str(score), True, YELLOW)
-  screen.blit(text, (525,250))
+  screen.blit(text, (525,375))
   return score
+  
+def draw_endSubmitInst():
+  font = pygame.font.Font(None, 50)
+  text = font.render("Press eneter to submit", True, WHITE)
+  screen.blit(text, (550,650))
+
+
+#submit functions
+
+def draw_submitScore(score, username):
+  font = pygame.font.Font(None, 50)
+  text = font.render("Submit score: " + str(score) + " as " + username, True, WHITE)
+  screen.blit(text, (500,450))
+
+def draw_submitInst():
+  font = pygame.font.Font(None, 50)
+  text = font.render("Press eneter to submit", True, WHITE)
+  screen.blit(text, (525,500))
+
+
+#CREATE FUNCTIONS
 
 #play functions
 #creates the bullets and their coordinates
@@ -80,6 +122,9 @@ def create_enemies(enemies, enemy_y):
   enemies.append(enemy)
   return enemies
 
+
+
+#DRWAING FUNCTIONS
 
   #draws the player character
 def draw_player(player_x):
@@ -107,6 +152,10 @@ def draw_health(hitPoints):
   text = font.render("HP: " + str(hitPoints), True, WHITE)
   screen.blit(text, (725,950))
   return hitPoints
+
+
+
+#MOVING FUNCTIONS
 
 #moves the player left and right without going off screen
 def move_player(player_x):
@@ -183,6 +232,7 @@ while keep_playing==True:
       keep_playing = False
 
   if gameState == "menu":
+    screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
         gameState = "play"
@@ -244,6 +294,9 @@ while keep_playing==True:
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_KP_ENTER:
+        gameState = "submit"
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
@@ -256,7 +309,20 @@ while keep_playing==True:
     draw_defeat()
     draw_restrtBut()
     draw_endScore(score)
+    draw_endSubmitInst()
     draw_exit()
+
+  elif gameState == "submit":
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_ESCAPE:
+        keep_playing = False
+      if event.key == pygame.K_KP_ENTER:
+        save_score(username, score)
+        gameState="menu"
+    screen.fill((0,0,0))
+    draw_submitScore(score, username)
+    draw_submitInst()
+
 
   #This function call updates the screen 
   pygame.display.update() 
