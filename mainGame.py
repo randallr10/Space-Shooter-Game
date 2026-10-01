@@ -295,7 +295,7 @@ while keep_playing==True:
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
     if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_KP_ENTER:
+      if event.key == pygame.K_RETURN:
         gameState = "submit"
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
@@ -316,7 +316,7 @@ while keep_playing==True:
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
-      if event.key == pygame.K_KP_ENTER:
+      if event.key == pygame.K_RETURN:
         save_score(username, score)
         gameState="menu"
     screen.fill((0,0,0))
