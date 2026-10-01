@@ -36,8 +36,8 @@ username = "test"
 
 
 def save_score(username, score):
-  connection = sqlite3.connect("database.db")
-  cursor = connection.cursor()
+  connect = sqlite3.connect("database.db")
+  cursor = connect.cursor()
 
   cursor.execute(
     "INSERT INTO LEADERBOARD \
@@ -45,9 +45,17 @@ def save_score(username, score):
                     (username, score)
   )
   
-  connection.commit()
-  connection.close()
+  connect.commit()
+  connect.close()
 
+def leaderboard():
+  connect = sqlite3.connect('database.db')
+  cursor = connect.cursor()
+  cursor.execute('SELECT * FROM LEADERBOARD')
+
+  data = cursor.fetchall()
+
+  connect.close()
 
 
 #MENU FUNCT.
@@ -238,12 +246,13 @@ while keep_playing==True:
         gameState = "play"
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+    leaderboard()
     draw_title()
     draw_startBut()
     draw_exit()
   
   elif gameState == "play":
-
+    screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
