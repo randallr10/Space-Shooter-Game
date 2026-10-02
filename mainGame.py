@@ -53,10 +53,14 @@ def leaderboard():
   text = exitFont.render("Esc to Exit", True, WHITE)
   screen.blit(text, (0,0))
 
+  returnFont = pygame.font.Font(None, 50)
+  text = returnFont.render("Backspace to Return", True, WHITE)
+  screen.blit(text, (0,50))
+
 
   connect = sqlite3.connect('database.db')
   cursor = connect.cursor()
-  cursor.execute('SELECT * FROM LEADERBOARD')
+  cursor.execute('SELECT * FROM leaderboard ORDER BY CAST(scores AS INTEGER) DESC LIMIT 10')
 
   data = cursor.fetchall()
 
@@ -270,13 +274,15 @@ while keep_playing==True:
         gameState = "play"
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
-      if event.key == pygame.K_RETURN:
+      if event.key == pygame.K_KP_ENTER:
         gameState = "leaderboard"
     draw_menu()
   elif gameState == "leaderboard":
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+      if event.key == pygame.K_BACKSPACE:
+        gameState = "menu"
     screen.fill((0,0,0))
     leaderboard()
   
