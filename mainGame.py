@@ -31,7 +31,7 @@ last_enemy = 0
 bullets = []
 enemies = []
 score = 0
-hitPoints = 3
+hitPoints = 1
 username = "test"
 
 
@@ -49,6 +49,11 @@ def save_score(username, score):
   connect.close()
 
 def leaderboard():
+  exitFont = pygame.font.Font(None, 50)
+  text = exitFont.render("Esc to Exit", True, WHITE)
+  screen.blit(text, (0,0))
+
+
   connect = sqlite3.connect('database.db')
   cursor = connect.cursor()
   cursor.execute('SELECT * FROM LEADERBOARD')
@@ -57,59 +62,78 @@ def leaderboard():
 
   connect.close()
 
+  titleFont = pygame.font.Font(None, 100)
+  dataFont = pygame.font.Font(None, 50)
+
+  y=200
+
+  title = titleFont.render("Leaderboard", True, WHITE)
+  screen.blit(title, (600,100))
+
+  for row in data:
+    name = row[0]
+    score = row[1]
+
+    text = dataFont.render(str(name) + " - " + str(score), True, WHITE)
+    screen.blit(text, (735, y))
+    y+=60
+
 
 #MENU FUNCT.
 
-def draw_title():
-  font = pygame.font.Font(None, 100)
-  text = font.render("Space Shooter", True, WHITE)
+def draw_menu():
+  titleFont = pygame.font.Font(None, 100)
+  text = titleFont.render("Space Shooter", True, WHITE)
   screen.blit(text, (525,500))
 
-def draw_startBut():
-  font = pygame.font.Font(None, 64)
-  text = font.render("Press down arrow to Start", True, WHITE)
+  startButFont = pygame.font.Font(None, 64)
+  text = startButFont.render("Press down arrow to Start", True, WHITE)
   screen.blit(text, (490, 600))
 
-def draw_exit():
-  font = pygame.font.Font(None, 50)
-  text = font.render("Esc to Exit", True, WHITE)
+  exitFont = pygame.font.Font(None, 50)
+  text = exitFont.render("Esc to Exit", True, WHITE)
   screen.blit(text, (0,0))
+
+  lbInstFont = pygame.font.Font(None, 50)
+  text = lbInstFont.render("Press Enter to see Leaderboard", True, WHITE)
+  screen.blit(text, (500, 700))
 
 
   #END GAME STATE FUNCTIONS
 
-def draw_defeat():
+def draw_end(score):
   font = pygame.font.Font(None, 100)
   text = font.render("Defeated...", True, RED)
   screen.blit(text, (575,500))
 
-def draw_restrtBut():
   font = pygame.font.Font(None, 64)
   text = font.render("Press down arrow to Restart", True, WHITE)
   screen.blit(text, (425, 600))
 
-def draw_endScore(score):
   font = pygame.font.Font(None, 120)
   text = font.render("Score: " + str(score), True, YELLOW)
   screen.blit(text, (525,375))
-  return score
   
-def draw_endSubmitInst():
   font = pygame.font.Font(None, 50)
   text = font.render("Press eneter to submit", True, WHITE)
   screen.blit(text, (550,650))
+
+  exitFont = pygame.font.Font(None, 50)
+  text = exitFont.render("Esc to Exit", True, WHITE)
+  screen.blit(text, (0,0))
+
+  return score
 
 
 #submit functions
 
 def draw_submitScore(score, username):
-  font = pygame.font.Font(None, 50)
-  text = font.render("Submit score: " + str(score) + " as " + username, True, WHITE)
+  subScoreFont = pygame.font.Font(None, 50)
+  text = subScoreFont.render("Submit score: " + str(score) + " as " + username, True, WHITE)
   screen.blit(text, (500,450))
 
-def draw_submitInst():
-  font = pygame.font.Font(None, 50)
-  text = font.render("Press eneter to submit", True, WHITE)
+  subInstrFont = pygame.font.Font(None, 50)
+  text = subInstrFont.render("Press eneter to submit", True, WHITE)
   screen.blit(text, (525,500))
 
 
@@ -246,10 +270,15 @@ while keep_playing==True:
         gameState = "play"
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+      if event.key == pygame.K_RETURN:
+        gameState = "leaderboard"
+    draw_menu()
+  elif gameState == "leaderboard":
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_ESCAPE:
+        keep_playing = False
+    screen.fill((0,0,0))
     leaderboard()
-    draw_title()
-    draw_startBut()
-    draw_exit()
   
   elif gameState == "play":
     screen.fill((0,0,0))
@@ -304,7 +333,7 @@ while keep_playing==True:
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
     if event.type == pygame.KEYDOWN:
-      if event.key == pygame.K_RETURN:
+      if event.key == pygame.K_KP_ENTER:
         gameState = "submit"
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
@@ -313,13 +342,9 @@ while keep_playing==True:
         bullets = []
         enemies = []
         score = 0
-        hitPoints = 3
+        hitPoints = 1
         player_x = 750
-    draw_defeat()
-    draw_restrtBut()
-    draw_endScore(score)
-    draw_endSubmitInst()
-    draw_exit()
+    draw_end(score)
 
   elif gameState == "submit":
     if event.type == pygame.KEYDOWN:
@@ -330,7 +355,6 @@ while keep_playing==True:
         gameState="menu"
     screen.fill((0,0,0))
     draw_submitScore(score, username)
-    draw_submitInst()
 
 
   #This function call updates the screen 
