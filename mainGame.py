@@ -1,6 +1,7 @@
 #import the pygame library 
 import pygame 
 import random
+import requests
 import sqlite3
 
 #anchor the pygame screen so you see it in codio.
@@ -32,21 +33,20 @@ bullets = []
 enemies = []
 score = 0
 hitPoints = 1
-username = "test"
+username = "Randall"
 
 
 def save_score(username, score):
-  connect = sqlite3.connect("database.db")
-  cursor = connect.cursor()
+  url = 'http://localhost:5000/submit_score'
 
-  cursor.execute(
-    "INSERT INTO LEADERBOARD \
-    (username, scores) VALUES (?,?)",
-                    (username, score)
-  )
-  
-  connect.commit()
-  connect.close()
+  data = {
+    'username': username,
+    'scores': score
+  }
+
+  response = requests.post(url, json = data)
+
+  print(response.json())
 
 def leaderboard():
   exitFont = pygame.font.Font(None, 50)
