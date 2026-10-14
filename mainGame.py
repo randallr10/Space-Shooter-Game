@@ -32,8 +32,8 @@ last_enemy = 0
 bullets = []
 enemies = []
 score = 0
-hitPoints = 1
-username = "Randall"
+hitPoints = 3
+username = ""
 
 
 def save_score(username, score):
@@ -257,6 +257,9 @@ clock.tick(60)
 #variable to control the game loop 
 keep_playing=True 
 gameState="menu"
+name_confirmed = False
+
+input_box = pygame.Rect(475, 300, 575, 100)
 
 #Game Loop - needed to keep updating and redrawing the screen 
 while keep_playing==True: 
@@ -266,6 +269,17 @@ while keep_playing==True:
     #will stop the game loop if escape is pressed 
     if event.type == pygame.QUIT: 
       keep_playing = False
+    if event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_RETURN:
+        if username.strip() != "":
+          name_confirmed = True
+      
+      elif event.key == pygame.K_BACKSPACE:
+        username = username[:-1]
+
+      else:
+        if not name_confirmed and len(username) < 15:
+          username += event.unicode
 
   if gameState == "menu":
     screen.fill((0,0,0))
@@ -276,7 +290,21 @@ while keep_playing==True:
         keep_playing = False
       if event.key == pygame.K_KP_ENTER:
         gameState = "leaderboard"
+
+    font = pygame.font.Font(None, 36)
+    small_font = pygame.font.Font(None, 26)
+    if not name_confirmed:
+        title = font.render("Enter your name:", True, (255, 255, 255))
+        screen.blit(title, (input_box.x, input_box.y - 50))
+
+        pygame.draw.rect(screen, (255, 255, 255), input_box, 2)
+
+        name_text = font.render(username, True, WHITE)
+        screen.blit(name_text, (input_box.x + 10, input_box.y + 30))
+
     draw_menu()
+
+
   elif gameState == "leaderboard":
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
@@ -348,8 +376,10 @@ while keep_playing==True:
         bullets = []
         enemies = []
         score = 0
-        hitPoints = 1
+        hitPoints = 3
         player_x = 750
+        name_confirmed = False
+        username = ""
     draw_end(score)
 
   elif gameState == "submit":
