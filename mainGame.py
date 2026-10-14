@@ -37,7 +37,7 @@ username = ""
 
 
 def save_score(username, score):
-  url = 'http://localhost:5000/submit_score'
+  url = 'http://10.30.1.20:5000/submit_score'
 
   data = {
     'username': username,
