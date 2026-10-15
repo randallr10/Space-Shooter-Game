@@ -58,9 +58,9 @@ def leaderboard():
   screen.blit(text, (0,50))
 
 
-  connect = sqlite3.connect('database.db')
+  connect = sqlite3.connect('leaderboard.db')
   cursor = connect.cursor()
-  cursor.execute('SELECT * FROM leaderboard ORDER BY CAST(scores AS INTEGER) DESC LIMIT 10')
+  cursor.execute('SELECT username, scores FROM SCORES ORDER BY CAST(scores AS INTEGER) DESC LIMIT 10')
 
   data = cursor.fetchall()
 
@@ -99,8 +99,8 @@ def draw_menu():
   screen.blit(text, (0,0))
 
   lbInstFont = pygame.font.Font(None, 50)
-  text = lbInstFont.render("Press Enter to see Leaderboard", True, WHITE)
-  screen.blit(text, (500, 700))
+  text = lbInstFont.render("Press Num Pad Enter to see Leaderboard", True, WHITE)
+  screen.blit(text, (450, 700))
 
 
   #END GAME STATE FUNCTIONS
@@ -119,8 +119,8 @@ def draw_end(score):
   screen.blit(text, (525,375))
   
   font = pygame.font.Font(None, 50)
-  text = font.render("Press eneter to submit", True, WHITE)
-  screen.blit(text, (550,650))
+  text = font.render("Press Num Pad enter to submit", True, WHITE)
+  screen.blit(text, (450,650))
 
   exitFont = pygame.font.Font(None, 50)
   text = exitFont.render("Esc to Exit", True, WHITE)
@@ -137,7 +137,7 @@ def draw_submitScore(score, username):
   screen.blit(text, (500,450))
 
   subInstrFont = pygame.font.Font(None, 50)
-  text = subInstrFont.render("Press eneter to submit", True, WHITE)
+  text = subInstrFont.render("Press enter to submit", True, WHITE)
   screen.blit(text, (525,500))
 
 
@@ -273,6 +273,9 @@ while keep_playing==True:
       if event.key == pygame.K_RETURN:
         if username.strip() != "":
           name_confirmed = True
+        else:
+          username = "Anonymous"
+          name_confirmed = True
       
       elif event.key == pygame.K_BACKSPACE:
         username = username[:-1]
@@ -285,7 +288,8 @@ while keep_playing==True:
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_DOWN:
-        gameState = "play"
+        if name_confirmed == True:
+          gameState = "play"
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
       if event.key == pygame.K_KP_ENTER:
