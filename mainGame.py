@@ -60,7 +60,7 @@ def leaderboard():
 
   connect = sqlite3.connect('leaderboard.db')
   cursor = connect.cursor()
-  cursor.execute('SELECT username, scores FROM SCORES ORDER BY CAST(scores AS INTEGER) DESC LIMIT 10')
+  cursor.execute('SELECT username, scores FROM SCORES ORDER BY CAST(scores AS INTEGER) DESC LIMIT 5')
 
   data = cursor.fetchall()
 
@@ -79,8 +79,8 @@ def leaderboard():
     score = row[1]
 
     text = dataFont.render(str(name) + " - " + str(score), True, WHITE)
-    screen.blit(text, (735, y))
-    y+=60
+    screen.blit(text, (675, y))
+    y+=100
 
 
 #MENU FUNCT.
@@ -392,6 +392,8 @@ while keep_playing==True:
         keep_playing = False
       if event.key == pygame.K_RETURN:
         save_score(username, score)
+        username = ""
+        name_confirmed = False
         gameState="menu"
     screen.fill((0,0,0))
     draw_submitScore(score, username)
