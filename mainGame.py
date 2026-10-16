@@ -43,7 +43,7 @@ def save_score(username, score):
     'username': username,
     'scores': score
   }
-
+  
   response = requests.post(url, json = data)
 
   print(response.json())
@@ -383,7 +383,6 @@ while keep_playing==True:
         hitPoints = 3
         player_x = 750
         name_confirmed = False
-        username = ""
     draw_end(score)
 
   elif gameState == "submit":

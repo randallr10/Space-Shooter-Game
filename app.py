@@ -13,6 +13,11 @@ def participants():
     data = cursor.fetchall()
     return render_template("leaderboard.html", data=data)
 
+connect = sqlite3.connect("leaderboard.db")
+connect.execute(
+    'CREATE TABLE IF NOT EXISTS SCORES (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, scores INTEGER)'
+)
+
 @app.route('/submit_score', methods=['POST'])
 def submit_score():
     username = request.json['username']
