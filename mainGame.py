@@ -35,7 +35,7 @@ score = 0
 hitPoints = 3
 username = ""
 
-
+#inputs the values username and score into a flask function to be inputed into a sql table
 def save_score(username, score):
   url = 'http://10.30.1.20:5000/submit_score'
 
@@ -48,6 +48,8 @@ def save_score(username, score):
 
   print(response.json())
 
+
+#draws all aspects in the leaderboard game state; shows the top 5 highest scores in decending order.
 def leaderboard():
   exitFont = pygame.font.Font(None, 50)
   text = exitFont.render("Esc to Exit", True, WHITE)
@@ -83,7 +85,7 @@ def leaderboard():
     y+=100
 
 
-#MENU FUNCT.
+#draws every aspect in the menu game state
 
 def draw_menu():
   titleFont = pygame.font.Font(None, 100)
@@ -103,7 +105,7 @@ def draw_menu():
   screen.blit(text, (450, 700))
 
 
-  #END GAME STATE FUNCTIONS
+#draws every aspect in the end screen game state
 
 def draw_end(score):
   font = pygame.font.Font(None, 100)
@@ -129,7 +131,7 @@ def draw_end(score):
   return score
 
 
-#submit functions
+#submit score information function
 
 def draw_submitScore(score, username):
   subScoreFont = pygame.font.Font(None, 50)
@@ -173,16 +175,19 @@ def draw_bullets(bullets):
   for bullet in bullets:
     pygame.draw.rect(screen, YELLOW, bullet)
 
+#draws the enemies to the screen based on random x and y coordinates from the created enemy in the list enemies.
 def draw_enemies(enemies):
   for enemy in enemies:
     pygame.draw.rect(screen, RED, enemy)
 
+#draws the score to the top of the screen and increases throughout the game
 def draw_score(score):
   font = pygame.font.Font(None, 50)
   text = font.render("Score: " + str(score), True, WHITE)
   screen.blit(text, (0,0))
   return score
 
+#draws the health you have left at the bottom of the screen
 def draw_health(hitPoints):
   font = pygame.font.Font(None, 50)
   text = font.render("HP: " + str(hitPoints), True, WHITE)
@@ -270,6 +275,7 @@ while keep_playing==True:
     if event.type == pygame.QUIT: 
       keep_playing = False
     if event.type == pygame.KEYDOWN:
+      #enters the username typed in as a confirmed name and if nothing is inserted when entered, its value is set to anonymous.
       if event.key == pygame.K_RETURN:
         if username.strip() != "":
           name_confirmed = True
@@ -277,9 +283,11 @@ while keep_playing==True:
           username = "Anonymous"
           name_confirmed = True
       
+      #when backspace is hit the last character typed in is deleted from the username value.
       elif event.key == pygame.K_BACKSPACE:
         username = username[:-1]
 
+      #this checks for any key press on your keyboard and adds that value onto the username value.
       else:
         if not name_confirmed and len(username) < 15:
           username += event.unicode
@@ -287,16 +295,22 @@ while keep_playing==True:
   if gameState == "menu":
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
+      #checks if the username is entered and changes the game state to play to start the game \ 
+      #if the username is not entered it will not change
       if event.key == pygame.K_DOWN:
         if name_confirmed == True:
           gameState = "play"
+      #exits the game loop and ends the program
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+      #changes the game state to leaderboard when pressed
       if event.key == pygame.K_KP_ENTER:
         gameState = "leaderboard"
 
     font = pygame.font.Font(None, 36)
     small_font = pygame.font.Font(None, 26)
+
+    #removes the input username box when the name is entered
     if not name_confirmed:
         title = font.render("Enter your name:", True, (255, 255, 255))
         screen.blit(title, (input_box.x, input_box.y - 50))
@@ -311,21 +325,27 @@ while keep_playing==True:
 
   elif gameState == "leaderboard":
     if event.type == pygame.KEYDOWN:
+      #exits the game loop and ends the program
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+      #changes the game state back to the menu screen
       if event.key == pygame.K_BACKSPACE:
         gameState = "menu"
     screen.fill((0,0,0))
+
     leaderboard()
   
   elif gameState == "play":
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
+      #ends the game loop and ends the program
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+
       if event.key == pygame.K_UP:
         current_time = pygame.time.get_ticks()
         if current_time - last_shot >= SHOT_DELAY:
+          #creates a bullet in the list bullets based on the players x and y value
           bullets = create_bullet(bullets, player_x, bullet_y)
           last_shot = current_time   
     #checks for keyboard input
@@ -333,6 +353,7 @@ while keep_playing==True:
 
     enemy_time = pygame.time.get_ticks()
     if enemy_time - last_enemy >= ENEMY_DELAY:
+      #creates an enemy in the enemies list based on the players y value and a random x value
       enemies = create_enemies(enemies, enemy_y)
       last_enemy = enemy_time
 
@@ -368,13 +389,16 @@ while keep_playing==True:
 
   elif gameState == "end":
     if event.type == pygame.KEYDOWN:
+      #ends the game loop and closes the program
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
     if event.type == pygame.KEYDOWN:
+      #sends the player to the submit game state where they can submit their score
       if event.key == pygame.K_KP_ENTER:
         gameState = "submit"
     screen.fill((0,0,0))
     if event.type == pygame.KEYDOWN:
+      #when pressed, the player will get sent back to the game to re-try, all changeable values are also reset.
       if event.key == pygame.K_DOWN:
         gameState = "play"
         bullets = []
@@ -387,8 +411,10 @@ while keep_playing==True:
 
   elif gameState == "submit":
     if event.type == pygame.KEYDOWN:
+      #ends game loop and closes the program
       if event.key == pygame.K_ESCAPE:
         keep_playing = False
+      #score is submited to flask and then into a sql table
       if event.key == pygame.K_RETURN:
         save_score(username, score)
         username = ""
