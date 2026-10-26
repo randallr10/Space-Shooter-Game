@@ -3,6 +3,8 @@ import pygame
 import random
 import requests
 import sqlite3
+from gameStateLibrary import DrawStates
+from playGameLibrary import DrawGame, CreateGameElements, MoveElements
 
 #anchor the pygame screen so you see it in codio.
 #Click on the arrow in the upper left corner to display in a new browser tab.
@@ -49,155 +51,6 @@ def save_score(username, score):
   print(response.json())
 
 
-#draws all aspects in the leaderboard game state; shows the top 5 highest scores in decending order.
-def leaderboard():
-  exitFont = pygame.font.Font(None, 50)
-  text = exitFont.render("Esc to Exit", True, WHITE)
-  screen.blit(text, (0,0))
-
-  returnFont = pygame.font.Font(None, 50)
-  text = returnFont.render("Backspace to Return", True, WHITE)
-  screen.blit(text, (0,50))
-
-
-  connect = sqlite3.connect('leaderboard.db')
-  cursor = connect.cursor()
-  cursor.execute('SELECT username, scores FROM SCORES ORDER BY CAST(scores AS INTEGER) DESC LIMIT 5')
-
-  data = cursor.fetchall()
-
-  connect.close()
-
-  titleFont = pygame.font.Font(None, 100)
-  dataFont = pygame.font.Font(None, 50)
-
-  y=200
-
-  title = titleFont.render("Leaderboard", True, WHITE)
-  screen.blit(title, (600,100))
-
-  for row in data:
-    name = row[0]
-    score = row[1]
-
-    text = dataFont.render(str(name) + " - " + str(score), True, WHITE)
-    screen.blit(text, (675, y))
-    y+=100
-
-
-#draws every aspect in the menu game state
-
-def draw_menu():
-  titleFont = pygame.font.Font(None, 100)
-  text = titleFont.render("Space Shooter", True, WHITE)
-  screen.blit(text, (525,500))
-
-  startButFont = pygame.font.Font(None, 64)
-  text = startButFont.render("Press down arrow to Start", True, WHITE)
-  screen.blit(text, (490, 600))
-
-  exitFont = pygame.font.Font(None, 50)
-  text = exitFont.render("Esc to Exit", True, WHITE)
-  screen.blit(text, (0,0))
-
-  lbInstFont = pygame.font.Font(None, 50)
-  text = lbInstFont.render("Press Num Pad Enter to see Leaderboard", True, WHITE)
-  screen.blit(text, (450, 700))
-
-
-#draws every aspect in the end screen game state
-
-def draw_end(score):
-  font = pygame.font.Font(None, 100)
-  text = font.render("Defeated...", True, RED)
-  screen.blit(text, (575,500))
-
-  font = pygame.font.Font(None, 64)
-  text = font.render("Press down arrow to Restart", True, WHITE)
-  screen.blit(text, (425, 600))
-
-  font = pygame.font.Font(None, 120)
-  text = font.render("Score: " + str(score), True, YELLOW)
-  screen.blit(text, (525,375))
-  
-  font = pygame.font.Font(None, 50)
-  text = font.render("Press Num Pad enter to submit", True, WHITE)
-  screen.blit(text, (450,650))
-
-  exitFont = pygame.font.Font(None, 50)
-  text = exitFont.render("Esc to Exit", True, WHITE)
-  screen.blit(text, (0,0))
-
-  return score
-
-
-#submit score information function
-
-def draw_submitScore(score, username):
-  subScoreFont = pygame.font.Font(None, 50)
-  text = subScoreFont.render("Submit score: " + str(score) + " as " + username, True, WHITE)
-  screen.blit(text, (500,450))
-
-  subInstrFont = pygame.font.Font(None, 50)
-  text = subInstrFont.render("Press enter to submit", True, WHITE)
-  screen.blit(text, (525,500))
-
-
-#CREATE FUNCTIONS
-
-#play functions
-#creates the bullets and their coordinates
-def create_bullet(bullets, player_x, bullet_y):
-  player_x = player_x + 20
-  ammo = pygame.Rect(player_x, bullet_y, 10, 25)
-  bullets.append(ammo)
-  return bullets
-
-#creates the enemies and adds them to a list
-def create_enemies(enemies, enemy_y):
-  enemy_x = random.randint(0, 1450)
-  enemy = pygame.Rect(enemy_x, enemy_y, 50, 50)
-  enemies.append(enemy)
-  return enemies
-
-
-
-#DRWAING FUNCTIONS
-
-  #draws the player character
-def draw_player(player_x):
-  player = pygame.Rect(player_x, 850, 50, 50)
-  pygame.draw.rect(screen, WHITE, player)
-  return player
-
-#draws the billets onto the screen based on the coordinate they were created on.
-def draw_bullets(bullets):
-  for bullet in bullets:
-    pygame.draw.rect(screen, YELLOW, bullet)
-
-#draws the enemies to the screen based on random x and y coordinates from the created enemy in the list enemies.
-def draw_enemies(enemies):
-  for enemy in enemies:
-    pygame.draw.rect(screen, RED, enemy)
-
-#draws the score to the top of the screen and increases throughout the game
-def draw_score(score):
-  font = pygame.font.Font(None, 50)
-  text = font.render("Score: " + str(score), True, WHITE)
-  screen.blit(text, (0,0))
-  return score
-
-#draws the health you have left at the bottom of the screen
-def draw_health(hitPoints):
-  font = pygame.font.Font(None, 50)
-  text = font.render("HP: " + str(hitPoints), True, WHITE)
-  screen.blit(text, (725,950))
-  return hitPoints
-
-
-
-#MOVING FUNCTIONS
-
 #moves the player left and right without going off screen
 def move_player(player_x):
   speed = 7.5
@@ -209,40 +62,7 @@ def move_player(player_x):
       player_x += speed
   return player_x
 
-#moves the bullets from the players location to the top of the screen and deletes it from the list once it reaches the top
-def move_bullets(bullets, enemies):
-  speed = 10
-  for bullet in bullets:
-    bullet.y -= speed
-    if bullet.bottom < 0:
-      bullets.remove(bullet)
 
-#moves the enemies down towards the player
-def move_enemies(enemies, bullets, score, hitPoints, player):
-  speed = 1
-  for enemy in enemies[:]:
-    enemy.y += speed
-
-    if enemy.top > 1000:
-        enemies.remove(enemy)
-        hitPoints -= 1
-        continue
-
-    if enemy.colliderect(player):
-        enemies.remove(enemy)
-        hitPoints -= 1
-        continue
-
-    for bullet in bullets[:]:
-      if enemy.colliderect(bullet):
-        enemies.remove(enemy)
-        bullets.remove(bullet)
-        score += 100
-        break
-
-  return score, hitPoints
-
- 
 #create a screen with dimensions 
 screen = pygame.display.set_mode((screen_width, screen_height)) 
 
@@ -320,7 +140,7 @@ while keep_playing==True:
         name_text = font.render(username, True, WHITE)
         screen.blit(name_text, (input_box.x + 10, input_box.y + 30))
 
-    draw_menu()
+    DrawStates.drawMenu()
 
 
   elif gameState == "leaderboard":
@@ -333,7 +153,7 @@ while keep_playing==True:
         gameState = "menu"
     screen.fill((0,0,0))
 
-    leaderboard()
+    DrawStates.drawLeaderboard()
   
   elif gameState == "play":
     screen.fill((0,0,0))
@@ -346,45 +166,41 @@ while keep_playing==True:
         current_time = pygame.time.get_ticks()
         if current_time - last_shot >= SHOT_DELAY:
           #creates a bullet in the list bullets based on the players x and y value
-          bullets = create_bullet(bullets, player_x, bullet_y)
-          last_shot = current_time   
-    #checks for keyboard input
-    keys = pygame.key.get_pressed()
+          bullets = CreateGameElements.createBullet(bullets, player_x, bullet_y)
+          last_shot = current_time
 
     enemy_time = pygame.time.get_ticks()
     if enemy_time - last_enemy >= ENEMY_DELAY:
       #creates an enemy in the enemies list based on the players y value and a random x value
-      enemies = create_enemies(enemies, enemy_y)
+      enemies = CreateGameElements.createEnemies(enemies, enemy_y)
       last_enemy = enemy_time
 
-
-
-    move_bullets(bullets, enemies)
+    MoveElements.moveBullets(bullets, enemies)
     for bullet in bullets:
       pygame.draw.rect(screen, YELLOW, bullet)
 
     screen.fill((0,0,0))
 
-    player_x = move_player(player_x)
+    player_x = MoveElements.movePlayer(player_x)
 
 
     screen.fill((0, 0, 0))
 
 
-    player = draw_player(player_x)
+    player = DrawGame.drawPlayer(player_x)
 
-    score, hitPoints = move_enemies(enemies, bullets, score, hitPoints, player)
+    score, hitPoints = MoveElements.moveEnemies(enemies, bullets, score, hitPoints, player)
     if hitPoints == 0:
       gameState = "end"
 
 
 
-    draw_bullets(bullets)
+    DrawGame.drawBullets(bullets)
 
-    draw_score(score)
-    draw_health(hitPoints)
+    DrawGame.drawScore(score)
+    DrawGame.drawHealth(hitPoints)
 
-    draw_enemies(enemies)
+    DrawGame.drawEnemies(enemies)
 
 
   elif gameState == "end":
@@ -407,7 +223,7 @@ while keep_playing==True:
         hitPoints = 3
         player_x = 750
         name_confirmed = False
-    draw_end(score)
+    DrawStates.drawEnd(score)
 
   elif gameState == "submit":
     if event.type == pygame.KEYDOWN:
@@ -421,7 +237,7 @@ while keep_playing==True:
         name_confirmed = False
         gameState="menu"
     screen.fill((0,0,0))
-    draw_submitScore(score, username)
+    DrawStates.drawSubScore(score, username)
 
 
   #This function call updates the screen 
